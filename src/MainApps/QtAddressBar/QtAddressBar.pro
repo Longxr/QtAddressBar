@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = QtAddressBar
 TEMPLATE = app
 
+include(./../../Path.pri)
 
 SOURCES += main.cpp\
         MainWindow.cpp
