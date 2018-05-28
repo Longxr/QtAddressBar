@@ -1,0 +1,12 @@
+# ignore user files
+*.user
+*.autosave
+.DS_Store
+
+# 忽略生成的中间文件
+
+**build**
+Intermediate/
+RunImage/
+
+# 忽略一些草稿文件
