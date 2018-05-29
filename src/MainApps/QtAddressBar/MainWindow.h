@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 
+#include "FileSystemModel.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -15,8 +17,19 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+    void slotShowChild(const QModelIndex &index);
+    void slotSelectCurrent(const QModelIndex &index);
+
+    void on_pushButton_clicked();
+
 private:
+    void InitUI();
+
     Ui::MainWindow *ui;
+
+    QString             m_currentPath;
+    FileSystemModel*   m_pFileSystemModel;
 };
 
 #endif // MAINWINDOW_H

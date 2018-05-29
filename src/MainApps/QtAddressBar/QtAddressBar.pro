@@ -14,8 +14,18 @@ TEMPLATE = app
 include(./../../Path.pri)
 
 SOURCES += main.cpp\
-        MainWindow.cpp
+        MainWindow.cpp \
+    FileSystemModel.cpp \
+    QtAddressBar.cpp \
+    AddressItem.cpp
 
-HEADERS  += MainWindow.h
+HEADERS  += MainWindow.h \
+    NoFocusRectStyle.h \
+    FileSystemModel.h \
+    QtAddressBar.h \
+    AddressItem.h
 
 FORMS    += MainWindow.ui
+
+RESOURCES += \
+    res.qrc
