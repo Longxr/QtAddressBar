@@ -20,6 +20,7 @@ public:
 private slots:
     void slotShowChild(const QModelIndex &index);
     void slotSelectCurrent(const QModelIndex &index);
+    void slotCurrentPathChanged(const QString &path);
 
     void on_pushButton_clicked();
 

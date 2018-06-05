@@ -18,6 +18,9 @@ public:
 
     void UpdateCurrentPath(const QString &path);
 
+ signals:
+    void SCurrentPathChanged(const QString &path);
+
 protected:
     void paintEvent(QPaintEvent*);
     void mousePressEvent(QMouseEvent*);

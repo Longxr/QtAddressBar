@@ -14,6 +14,9 @@ public:
     void setSubItems(QVector<QString> subItems);
     void setBackIcon(bool flag);
 
+signals:
+    void SClickPath(const QString &path);
+
 protected:
     void paintEvent(QPaintEvent *event);
     void mousePressEvent(QMouseEvent *event);

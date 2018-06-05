@@ -4,6 +4,8 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QDebug>
+#include <QDir>
+#include <QFileInfoList>
 
 #define ARROW_WIDTH     17
 #define SPACE_WIDTH     8
@@ -122,6 +124,7 @@ void AddressItem::mouseReleaseEvent(QMouseEvent *event)
     if(event->button() == Qt::LeftButton){
         if(m_pressedText) {
             qDebug() << "clicked text dir";
+            emit SClickPath(m_path);
         }
 
         m_pressedText = false;
@@ -174,30 +177,28 @@ void AddressItem::menuAboutToHide()
 
 void AddressItem::onClickSubItem()
 {
-
+    qDebug() << "click menu";
 }
 
 void AddressItem::onCheckChanged(bool checked)
 {
-    qDebug() << "11111111111111" << checked;
-
     update();
 
-//    if (checked)
-//    {
-////            emit  ((PathLineWidget*)parentWidget())->clickeddirsubpath(m_path);
-//        if(!m_clickmenu->isVisible()) {
-//            QPoint GlobalPoint(this->mapToGlobal(QPoint(0,0)));
-//            GlobalPoint.setX(GlobalPoint.x() + ARROW_WIDTH+m_textWidth - 30);
-//            GlobalPoint.setY(GlobalPoint.y() + ITEM_HEIGHT);
-//            m_clickmenu->move(GlobalPoint);
-//            //menu->move(cursor().pos());
-//            m_clickmenu->show();
-//        }
-//    }
-//    else{
-//        m_clickmenu->close();
-//    }
+    if (checked)
+    {
+//            emit  ((PathLineWidget*)parentWidget())->clickeddirsubpath(m_path);
+        if(!m_clickmenu->isVisible()) {
+            QPoint GlobalPoint(this->mapToGlobal(QPoint(0,0)));
+            GlobalPoint.setX(GlobalPoint.x() + ARROW_WIDTH+m_textWidth - 30);
+            GlobalPoint.setY(GlobalPoint.y() + ITEM_HEIGHT);
+            m_clickmenu->move(GlobalPoint);
+            //menu->move(cursor().pos());
+            m_clickmenu->show();
+        }
+    }
+    else{
+        m_clickmenu->close();
+    }
 }
 
 void AddressItem::InitUI()
@@ -206,32 +207,23 @@ void AddressItem::InitUI()
     m_checkedIcon = QPixmap(":/res/arrow_down.png");
 
     m_clickmenu = new QMenu(this);
+    m_clickmenu->setWindowFlags(Qt::ToolTip);
     connect(m_clickmenu, SIGNAL(aboutToHide()), this, SLOT(menuAboutToHide()));
 
     m_clickmenu->clear();
-    QAction* itemAc = new QAction(tr("&Open"), m_clickmenu);
-    connect(itemAc, SIGNAL(triggered()), this, SLOT(onClickSubItem()));
-    m_clickmenu->addAction(itemAc);
-    m_clickmenu->addAction(new QAction(QIcon(":/parent.png"), tr("&Mark"), m_clickmenu));
-    m_clickmenu->addAction(new QAction(tr("&Quit"), m_clickmenu));
-    m_clickmenu->setParent(this);
+    QDir dir(m_path);
+    dir.setFilter(QDir::Dirs);
+    dir.setSorting(QDir::Name);
+    QStringList list = dir.entryList();
+    foreach(QString str, list) {
+        QAction* strAc = new QAction(str, m_clickmenu);
+        connect(strAc, SIGNAL(triggered()), this, SLOT(onClickSubItem()));
+        m_clickmenu->addAction(strAc);
+    }
 
-    m_clickmenu->setStyleSheet(
-                         "\
-                         QMenu {\
-                         background-color:rgb(242,242,242); \
-                         border: 1px solid rgb(100,100,100);\
-                         }\
-                     QMenu::item {\
-                         font-size: 9pt; \
-                         color: rgb(0,0,0);\
-                         padding:4px 20px 4px 20px;\
-                         margin:1px 2px;\
-                          }\
-                     QMenu::item:selected { \
-                         background-color:rgb(196,222,244);\
-                         }\
-                        ");
+    m_clickmenu->setStyleSheet("QMenu {background-color:rgb(242,242,242); border: 1px solid rgb(100,100,100);}\
+                     QMenu::item {font-size: 9pt; color: rgb(0,0,0); padding:4px 20px 4px 20px;margin:1px 2px;}\
+                     QMenu::item:selected { background-color:rgb(196,222,244);}");
 
     setMouseTracking(true);
     setCheckable(true);

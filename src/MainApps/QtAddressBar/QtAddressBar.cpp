@@ -5,6 +5,7 @@
 #include <QPainter>
 #include <QDebug>
 #include <QLabel>
+#include <QStringList>
 
 QtAddressBar::QtAddressBar(QWidget *parent) :
     QLineEdit(parent),
@@ -33,19 +34,24 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
 {
     m_currentPath = path;
 
-    for(int i = m_pMainLayout->count()-1; i >= 0; i--) {
-        QWidget* t = m_pMainLayout->itemAt(i)->widget();
-        m_pMainLayout->removeWidget(t);
-        t->deleteLater();
-    }
-
     foreach (QAbstractButton *button, m_addressGroup->buttons()) {
        m_addressGroup->removeButton(button);
     }
+
+    QLayoutItem *child;
+    while ((child = m_pMainLayout->takeAt(0)) != 0) {
+        if(child->widget())
+        {
+//            delete child->widget();
+            child->widget()->deleteLater();
+        }
+        delete child;
+    }
+
     int itemsWidth = 0;
     int contentWidth = width();
 
-    QStringList itemList = m_currentPath.split("\\");
+    QStringList itemList = m_currentPath.split("/", QString::SkipEmptyParts);
 
     //add parent icon
     QLabel *rootIcon = new QLabel(this);
@@ -64,9 +70,12 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
     for(int i=itemList.count()-1; i >= 0; i--)
     {
         QString fullPath;
+
+//        if(itemList[i].isEmpty()) {}
+
         for(int j=0; j <= i; ++j)
         {
-            fullPath +=itemList[j]+"\\";
+            fullPath +=itemList[j]+"/";
         }
         AddressItem* item = new AddressItem(itemList[i], fullPath, true, this);
         itemsWidth += item->width();
@@ -75,6 +84,8 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
         if(itemsWidth < contentWidth) {
             m_pMainLayout->insertWidget(2, item);
             m_addressGroup->addButton(item, i);
+
+            connect(item, &AddressItem::SClickPath, this, &QtAddressBar::SCurrentPathChanged);
         }
         else {
             break;
