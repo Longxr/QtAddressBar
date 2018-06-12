@@ -27,7 +27,7 @@ protected:
 
 private slots:
     void menuAboutToHide();
-    void onClickSubItem();
+    void onClickMenuItem();
     void onCheckChanged(bool checked);
 
 private:

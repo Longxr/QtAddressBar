@@ -123,7 +123,7 @@ void AddressItem::mouseReleaseEvent(QMouseEvent *event)
 {
     if(event->button() == Qt::LeftButton){
         if(m_pressedText) {
-            qDebug() << "clicked text dir";
+            qDebug() << "clicked item";
             emit SClickPath(m_path);
         }
 
@@ -175,9 +175,13 @@ void AddressItem::menuAboutToHide()
     m_pressed = false;
 }
 
-void AddressItem::onClickSubItem()
+void AddressItem::onClickMenuItem()
 {
-    qDebug() << "click menu";
+    QAction *action = qobject_cast<QAction *>(sender());
+    QString actionPath = m_path + action->text();
+
+    qDebug() << "clicked menu";
+    emit SClickPath(actionPath);
 }
 
 void AddressItem::onCheckChanged(bool checked)
@@ -212,12 +216,12 @@ void AddressItem::InitUI()
 
     m_clickmenu->clear();
     QDir dir(m_path);
-    dir.setFilter(QDir::Dirs);
+    dir.setFilter(/*QDir::Files | QDir::Hidden | */QDir::NoSymLinks | QDir::Dirs | QDir::NoDotAndDotDot);
     dir.setSorting(QDir::Name);
     QStringList list = dir.entryList();
     foreach(QString str, list) {
         QAction* strAc = new QAction(str, m_clickmenu);
-        connect(strAc, SIGNAL(triggered()), this, SLOT(onClickSubItem()));
+        connect(strAc, &QAction::triggered, this, onClickMenuItem);
         m_clickmenu->addAction(strAc);
     }
 

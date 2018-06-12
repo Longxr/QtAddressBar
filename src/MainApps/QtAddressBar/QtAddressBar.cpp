@@ -6,10 +6,15 @@
 #include <QDebug>
 #include <QLabel>
 #include <QStringList>
+#include <QResizeEvent>
+
+#define ROOT_ICON_WIDTH  34
 
 QtAddressBar::QtAddressBar(QWidget *parent) :
     QLineEdit(parent),
-    m_pressed(false)
+    m_pressed(false),
+    m_bSelectText(false),
+    m_bInputMode(false)
 {
     m_pMainLayout = new QHBoxLayout();
     m_pMainLayout->setContentsMargins(1, 1, 1, 1);
@@ -32,28 +37,17 @@ QtAddressBar::~QtAddressBar()
 
 void QtAddressBar::UpdateCurrentPath(const QString &path)
 {
+    clearAddressItem();
+
     m_currentPath = path;
-
-    foreach (QAbstractButton *button, m_addressGroup->buttons()) {
-       m_addressGroup->removeButton(button);
-    }
-
-    QLayoutItem *child;
-    while ((child = m_pMainLayout->takeAt(0)) != 0) {
-        if(child->widget())
-        {
-//            delete child->widget();
-            child->widget()->deleteLater();
-        }
-        delete child;
-    }
+    setText(QString());
 
     int itemsWidth = 0;
     int contentWidth = width();
 
     QStringList itemList = m_currentPath.split("/", QString::SkipEmptyParts);
 
-    //add parent icon
+    //add root icon
     QLabel *rootIcon = new QLabel(this);
     rootIcon->setFixedSize(17, 20);
     rootIcon->setStyleSheet(QString("QLabel{background-image: url(:/res/dir.png);}"));
@@ -65,7 +59,7 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
     m_pMainLayout->addWidget(root);
     m_addressGroup->addButton(root, 0);
 
-    contentWidth = contentWidth - rootIcon->width() - root->width();
+    contentWidth = contentWidth - ROOT_ICON_WIDTH;
 
     for(int i=itemList.count()-1; i >= 0; i--)
     {
@@ -79,16 +73,17 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
         }
         AddressItem* item = new AddressItem(itemList[i], fullPath, true, this);
         itemsWidth += item->width();
-        qDebug() << "itemsWidth" << itemsWidth;
+//        qDebug() << "itemsWidth" << itemsWidth;
+
+        m_pMainLayout->insertWidget(2, item);
+        connect(item, &AddressItem::SClickPath, this, &QtAddressBar::SCurrentPathChanged);
 
         if(itemsWidth < contentWidth) {
-            m_pMainLayout->insertWidget(2, item);
+            item->show();
             m_addressGroup->addButton(item, i);
-
-            connect(item, &AddressItem::SClickPath, this, &QtAddressBar::SCurrentPathChanged);
         }
         else {
-            break;
+            item->hide();
         }
     }
 
@@ -99,11 +94,15 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
     m_pMainLayout->addStretch();
 }
 
-void QtAddressBar::paintEvent(QPaintEvent *)
+void QtAddressBar::paintEvent(QPaintEvent *event)
 {
-    QPainter painter(this);
-    painter.setPen(QColor(217, 217, 217));
-    painter.drawRect(QRect(0, 0, this->width()-1, this->height()-1));
+    QLineEdit::paintEvent(event);
+
+    if(m_bInputMode) {
+        QPainter painter(this);
+        painter.setPen(QColor(0, 120, 215));
+        painter.drawRect(QRect(0, 0, this->width()-1, this->height()-1));
+    }
 }
 
 void QtAddressBar::mousePressEvent(QMouseEvent *e)
@@ -119,12 +118,23 @@ void QtAddressBar::mouseReleaseEvent(QMouseEvent *e)
 {
     if(e->button()==Qt::LeftButton && m_pressed)
     {
+        qDebug() << "click white space";
         m_pressed = false;
+        clearAddressItem();
 
-//        if(m_areaPath.contains(e->pos())){
+        setText(m_currentPath);
+        m_bInputMode = true;
 
-//        emit SClicked();
+        if(m_bSelectText) {
+            deselect();
+            m_bSelectText = false;
+        }
+        else {
+            selectAll();
+            m_bSelectText = true;
+        }
 
+        update();
     }
 }
 
@@ -142,6 +152,53 @@ void QtAddressBar::mouseMoveEvent(QMouseEvent *event)
    }
 }
 
+void QtAddressBar::focusInEvent(QFocusEvent *)
+{
+
+}
+
+void QtAddressBar::focusOutEvent(QFocusEvent *)
+{
+    UpdateCurrentPath(m_currentPath);
+    m_bInputMode = false;
+
+    update();
+}
+
+void QtAddressBar::resizeEvent(QResizeEvent *size)
+{
+//    int contentWidth = size->size().width() - ROOT_ICON_WIDTH;
+//    int itemsWidth = 0;
+
+//    foreach (QAbstractButton *button, m_addressGroup->buttons()) {
+//       m_addressGroup->removeButton(button);
+//    }
+
+//    for (int i=1; i < m_pMainLayout->count()-2; i++) //root item always show, 0 is space item
+//    {
+//        QLayoutItem *item = m_pMainLayout->itemAt(i);
+//        AddressItem *addressItem = qobject_cast<AddressItem *>(item->widget());
+//        if (addressItem != 0)
+//        {
+//            addressItem->hide();
+
+//            if(itemsWidth < contentWidth) {
+//                addressItem->show();
+//                m_addressGroup->addButton(addressItem, i);
+//            }
+//        }
+//    }
+
+//    QLayoutItem *root = m_pMainLayout->itemAt(1);
+//    AddressItem *rootItem = qobject_cast<AddressItem *>(root->widget());
+//    if(itemsWidth > contentWidth) {
+//        rootItem->setBackIcon(true);
+//    }
+//    else {
+//        rootItem->setBackIcon(false);
+//    }
+}
+
 void QtAddressBar::onGroupBtnClicked(QAbstractButton *button)
 {
     if(button == m_lastCheckBtn) {
@@ -155,5 +212,22 @@ void QtAddressBar::onGroupBtnClicked(QAbstractButton *button)
         m_lastCheckBtn = button;
     }
 
+}
+
+void QtAddressBar::clearAddressItem()
+{
+    foreach (QAbstractButton *button, m_addressGroup->buttons()) {
+       m_addressGroup->removeButton(button);
+    }
+
+    QLayoutItem *child;
+    while ((child = m_pMainLayout->takeAt(0)) != 0) {
+        if(child->widget())
+        {
+//            delete child->widget();
+            child->widget()->deleteLater();
+        }
+        delete child;
+    }
 }
 
