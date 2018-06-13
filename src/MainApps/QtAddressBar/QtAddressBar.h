@@ -22,13 +22,13 @@ signals:
     void SCurrentPathChanged(const QString &path);
 
 protected:
-    void paintEvent(QPaintEvent*);
     void mousePressEvent(QMouseEvent*);
     void mouseReleaseEvent(QMouseEvent*);
     void mouseMoveEvent(QMouseEvent*);
     void focusInEvent(QFocusEvent *);
     void focusOutEvent(QFocusEvent *);
-    void resizeEvent(QResizeEvent* size);
+    void resizeEvent(QResizeEvent*);
+    void keyPressEvent(QKeyEvent *);
 
 
 private slots:
@@ -40,7 +40,6 @@ private:
 private:
     bool                m_pressed;
     bool                m_bSelectText;
-    bool                m_bInputMode;
     QString             m_currentPath;
     QButtonGroup*       m_addressGroup;
     QAbstractButton*    m_lastCheckBtn;

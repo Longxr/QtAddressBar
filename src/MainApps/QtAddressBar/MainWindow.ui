@@ -38,6 +38,9 @@ border: 1px solid rgb(217, 217, 217);
 color:#333333;
 }
 
+QLineEdit::focus{
+border: 1px solid rgb(0, 120, 215);
+}
 
 </string>
       </property>
@@ -49,7 +52,7 @@ color:#333333;
     <item>
      <widget class="QPushButton" name="pushButton">
       <property name="text">
-       <string>PushButton</string>
+       <string>reset</string>
       </property>
      </widget>
     </item>
