@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QResizeEvent>
 #include <QFileInfo>
+#include <QDir>
 
 #define ROOT_ICON_WIDTH  34
 
@@ -139,6 +140,8 @@ void QtAddressBar::mouseMoveEvent(QMouseEvent *event)
           }
        }
    }
+
+   QLineEdit::mouseMoveEvent(event);
 }
 
 void QtAddressBar::focusInEvent(QFocusEvent *event)

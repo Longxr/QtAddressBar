@@ -11,7 +11,6 @@ public:
     explicit AddressItem(const QString &text, const QString &path, bool bArrow = true, QWidget *parent = 0);
     ~AddressItem();
 
-    void setSubItems(QVector<QString> subItems);
     void setBackIcon(bool flag);
 
 signals:

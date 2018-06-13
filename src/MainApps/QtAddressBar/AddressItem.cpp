@@ -37,25 +37,6 @@ AddressItem::~AddressItem()
     delete m_clickmenu;
 }
 
-void AddressItem::setSubItems(QVector<QString> subItems)
-{
-    m_clickmenu->clear();
-    for(int i=0; i<subItems.count(); ++i)
-    {
-        QByteArray ba = subItems[i].toLatin1();
-        QAction *itemAc =new QAction(QIcon(":/parent.png"), tr(ba.data()), m_clickmenu);
-        connect(itemAc, SIGNAL(triggered()), this, SLOT(onClickSubItem()));
-
-        m_clickmenu->addAction(itemAc);
-    }
-
-    QPoint GlobalPoint(this->mapToGlobal(QPoint(0,0)));
-    GlobalPoint.setX(GlobalPoint.x() + ARROW_WIDTH+m_textWidth - 30);
-    GlobalPoint.setY(GlobalPoint.y() + ITEM_HEIGHT);
-    m_clickmenu->move(GlobalPoint);
-    m_clickmenu->show();
-}
-
 void AddressItem::setBackIcon(bool flag)
 {
     if(flag) {
@@ -220,7 +201,7 @@ void AddressItem::InitUI()
     dir.setSorting(QDir::Name);
     QStringList list = dir.entryList();
     foreach(QString str, list) {
-        QAction* strAc = new QAction(str, m_clickmenu);
+        QAction* strAc = new QAction(QIcon(":/res/dir.png"), str, m_clickmenu);
         connect(strAc, &QAction::triggered, this, onClickMenuItem);
         m_clickmenu->addAction(strAc);
     }
