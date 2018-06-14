@@ -60,14 +60,16 @@ void MainWindow::slotCurrentPathChanged(const QString &path)
 
 void MainWindow::onCompleterChoosed(const QString &path)
 {
-    ui->addressbar->UpdateCurrentPath(path);
+    QString pathStr = QString(path);
+    pathStr.replace("\\", "/");
+    ui->addressbar->UpdateCurrentPath(pathStr);
 }
 
 void MainWindow::onTextChanged(const QString &text)
 {
     int index = text.lastIndexOf("/");
     QString dirStr = text.left(index + 1);
-    QString completeStr = text.right(text.length() - index -1);
+//    QString completeStr = text.right(text.length() - index -1);
 
     if(m_completerDir == dirStr) {
         return;
@@ -76,14 +78,10 @@ void MainWindow::onTextChanged(const QString &text)
         m_completerDir = dirStr;
     }
 
-    qDebug() << "1111111111111111" << m_completerDir << "2222" << completeStr;
-
     QFileInfo info(dirStr);
     if(info.isDir()) {
         m_pCompleterModel->refresh(m_pCompleterModel->index(dirStr));
     }
-
-    qDebug() << "model count:" << m_pCompleterModel->rowCount();
 }
 
 void MainWindow::InitUI()
@@ -117,10 +115,10 @@ void MainWindow::InitUI()
     connect(m_pCompleter, SIGNAL(activated(const QString&)), this, SLOT(onCompleterChoosed(const QString&)));
     connect(ui->addressbar, SIGNAL(textChanged(const QString&)), this, SLOT(onTextChanged(const QString&)));
 
-    connect(ui->tableView, &QTableView::doubleClicked, this, slotShowChild);
-    connect(ui->tableView, &QTableView::clicked, this, slotSelectCurrent);
+    connect(ui->tableView, &QTableView::doubleClicked, this, &MainWindow::slotShowChild);
+    connect(ui->tableView, &QTableView::clicked, this, &MainWindow::slotSelectCurrent);
 
-    connect(ui->addressbar, &QtAddressBar::SCurrentPathChanged, this, slotCurrentPathChanged);
+    connect(ui->addressbar, &QtAddressBar::SCurrentPathChanged, this, &MainWindow::slotCurrentPathChanged);
 }
 
 void MainWindow::on_pushButton_clicked()

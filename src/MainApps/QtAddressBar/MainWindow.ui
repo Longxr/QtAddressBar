@@ -50,6 +50,9 @@ border: 1px solid rgb(0, 120, 215);
      </widget>
     </item>
     <item>
+     <widget class="QLineEdit" name="lineEdit"/>
+    </item>
+    <item>
      <widget class="QPushButton" name="pushButton">
       <property name="text">
        <string>reset</string>

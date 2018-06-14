@@ -178,7 +178,7 @@ void AddressItem::onCheckChanged(bool checked)
             GlobalPoint.setY(GlobalPoint.y() + ITEM_HEIGHT);
             m_clickmenu->move(GlobalPoint);
             //menu->move(cursor().pos());
-            m_clickmenu->show();
+            m_clickmenu->exec();
         }
     }
     else{
@@ -202,7 +202,7 @@ void AddressItem::InitUI()
     QStringList list = dir.entryList();
     foreach(QString str, list) {
         QAction* strAc = new QAction(QIcon(":/res/dir.png"), str, m_clickmenu);
-        connect(strAc, &QAction::triggered, this, onClickMenuItem);
+        connect(strAc, &QAction::triggered, this, &AddressItem::onClickMenuItem);
         m_clickmenu->addAction(strAc);
     }
 
@@ -212,5 +212,5 @@ void AddressItem::InitUI()
 
     setMouseTracking(true);
     setCheckable(true);
-    connect(this, &AddressItem::toggled, this, onCheckChanged);
+    connect(this, &AddressItem::toggled, this, &AddressItem::onCheckChanged);
 }

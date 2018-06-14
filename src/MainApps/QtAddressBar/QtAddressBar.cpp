@@ -42,7 +42,7 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
     this->clearFocus();
     clearAddressItem();
 
-    m_currentPath = path;
+    m_currentPath = QString(path).replace("\\", "/");
     setText(QString());
 
     int itemsWidth = 0;
@@ -97,25 +97,26 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
     m_pMainLayout->addStretch();
 }
 
-void QtAddressBar::mousePressEvent(QMouseEvent *e)
+void QtAddressBar::mousePressEvent(QMouseEvent *event)
 {
-    if(e->button()==Qt::LeftButton)
+    if(event->button()==Qt::LeftButton)
     {
         m_pressed = true;
 //        if(m_areaPath.contains(e->pos())) {
     }
+
+    QLineEdit::mousePressEvent(event);
 }
 
-void QtAddressBar::mouseReleaseEvent(QMouseEvent *e)
+void QtAddressBar::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(e->button()==Qt::LeftButton && m_pressed)
+    if(event->button()==Qt::LeftButton && m_pressed)
     {
         qDebug() << "click white space";
         m_pressed = false;
         clearAddressItem();
 
         setText(m_currentPath);
-        this->setFocus();
 
         if(m_bSelectText) {
             deselect();
@@ -126,6 +127,8 @@ void QtAddressBar::mouseReleaseEvent(QMouseEvent *e)
             m_bSelectText = true;
         }
     }
+
+    QLineEdit::mouseReleaseEvent(event);
 }
 
 void QtAddressBar::mouseMoveEvent(QMouseEvent *event)
