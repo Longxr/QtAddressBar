@@ -87,7 +87,7 @@ void MainWindow::onTextChanged(const QString &text)
 
 void MainWindow::InitUI()
 {
-    m_currentPath = QString("Z:/QtWorkspace/trunk/PackageMaker_SetupSkin/SetupScripts/classroomcloud");
+    m_currentPath = QString("C:/Windows/System32/sk-SK");
     m_pFileSystemModel = new FileSystemModel(this);
     m_pFileSystemModel->setRootPath(m_currentPath);
     ui->addressbar->setText(m_currentPath);
@@ -125,7 +125,7 @@ void MainWindow::InitUI()
 
 void MainWindow::on_pushButton_clicked()
 {
-    m_currentPath = QString("Z:/QtWorkspace/trunk/PackageMaker_SetupSkin/SetupScripts/classroomcloud");
+    m_currentPath = QString("C:/Windows/System32/sk-SK");
     ui->addressbar->UpdateCurrentPath(m_currentPath);
 }
 

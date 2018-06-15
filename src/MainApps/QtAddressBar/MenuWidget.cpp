@@ -2,6 +2,7 @@
 #include "ui_MenuWidget.h"
 
 #include <QStandardPaths>
+#include <QDebug>
 
 MenuWidget::MenuWidget(bool isRoot, QWidget *parent) :
     QWidget(parent),
@@ -74,6 +75,7 @@ void MenuWidget::setRootModel()
 void MenuWidget::on_listView_clicked(const QModelIndex &index)
 {
     QString path = index.data(Qt::UserRole + 1).toString();
+    qDebug() << "path: " << path;
 
     emit SClickPath(path);
 
