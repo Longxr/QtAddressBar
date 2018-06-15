@@ -28,7 +28,7 @@ void MainWindow::slotShowChild(const QModelIndex &index)
 
     if(m_pFileSystemModel->fileInfo(index).isDir()) {
         m_currentPath = path;
-        ui->addressbar->setText(path);
+        ui->addressbar->UpdateCurrentPath(path);
 
         ui->tableView->setRootIndex(m_pFileSystemModel->index(m_currentPath));
         ui->tableView->clearSelection();
