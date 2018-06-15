@@ -28,6 +28,10 @@ private slots:
     void onTextChanged(const QString&);
     void on_pushButton_clicked();
 
+protected:
+    bool event(QEvent *);
+    bool eventFilter(QObject *, QEvent *);
+
 private:
     void InitUI();
 

@@ -17,6 +17,7 @@ public:
     ~QtAddressBar();
 
     void UpdateCurrentPath(const QString &path);
+    void closeMenu();
 
 signals:
     void SCurrentPathChanged(const QString &path);
@@ -29,9 +30,6 @@ protected:
     void focusOutEvent(QFocusEvent *);
     void resizeEvent(QResizeEvent*);
     void keyPressEvent(QKeyEvent *);
-    void enterEvent(QEvent *);
-    void leaveEvent(QEvent *);
-
 
 private slots:
     void onGroupBtnClicked(QAbstractButton*);

@@ -4,11 +4,13 @@
 #include <QPushButton>
 #include <QMenu>
 
+#include "MenuWidget.h"
+
 class AddressItem : public QPushButton
 {
     Q_OBJECT
 public:
-    explicit AddressItem(const QString &text, const QString &path, bool bArrow = true, QWidget *parent = 0);
+    explicit AddressItem(const QString &text, const QString &path, bool isRoot = true, QWidget *parent = 0);
     ~AddressItem();
 
     void setBackIcon(bool flag);
@@ -24,8 +26,6 @@ protected:
     void enterEvent(QEvent *);
     void leaveEvent(QEvent *);
 
-    bool eventFilter(QObject *, QEvent *);
-
 private slots:
     void menuAboutToHide();
     void onClickMenuItem();
@@ -35,23 +35,22 @@ private:
     void InitUI();
 
 private:
-    bool m_pressed = false;
-    bool m_pressedText = false;
-    QMenu* m_clickmenu;
+    bool        m_pressed;
+    bool        m_pressedText;
+    bool        m_moveflag;
+    bool        m_bRoot;
 
-    bool m_moveflag = false;
+    QMenu*      m_clickmenu;
+    MenuWidget* m_pMenuWidget;
 
-    bool m_bHaveArrow;
-    int m_textWidth;
-    QFont m_font;
+    int         m_textWidth;
+    QFont       m_font;
 
-    QString m_path;
-    QString m_text;
+    QString     m_path;
+    QString     m_text;
 
-    QPixmap m_normalIcon;
-    QPixmap m_checkedIcon;
-
-    QVector<QString> m_subitems;
+    QPixmap     m_normalIcon;
+    QPixmap     m_checkedIcon;
 };
 
 #endif // ADDRESSITEM_H

@@ -74,7 +74,7 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
         {
             fullPath +=itemList[j]+"/";
         }
-        AddressItem* item = new AddressItem(itemList[i], fullPath, true, this);
+        AddressItem* item = new AddressItem(itemList[i], fullPath, false, this);
         itemsWidth += item->width();
 //        qDebug() << "itemsWidth" << itemsWidth;
 
@@ -95,6 +95,17 @@ void QtAddressBar::UpdateCurrentPath(const QString &path)
     }
 
     m_pMainLayout->addStretch();
+}
+
+void QtAddressBar::closeMenu()
+{
+    if(nullptr != m_lastCheckBtn) {
+        m_addressGroup->setExclusive(false);
+        m_lastCheckBtn->setChecked(false);
+        m_addressGroup->setExclusive(true);
+
+        m_lastCheckBtn = nullptr;
+    }
 }
 
 void QtAddressBar::mousePressEvent(QMouseEvent *event)
@@ -173,6 +184,7 @@ void QtAddressBar::resizeEvent(QResizeEvent *event)
         foreach (QAbstractButton *button, m_addressGroup->buttons()) {
            m_addressGroup->removeButton(button);
         }
+        m_lastCheckBtn = nullptr;
 
         for (int i=m_pMainLayout->count()-2; i >= 2; i--) //root item(0,1) always show, count()-1 is space item
         {
@@ -208,32 +220,21 @@ void QtAddressBar::resizeEvent(QResizeEvent *event)
 void QtAddressBar::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Return) {
-        QFileInfo info(this->text());
+        QString pathStr = this->text();
+        pathStr.replace("\\", "/");
+        QFileInfo info(pathStr);
+
         if(info.isDir()) {
             m_currentPath = info.absoluteFilePath();
+        }
+        else {
+            qDebug() << "not dir";
         }
 
         UpdateCurrentPath(m_currentPath);
     }
 
     QLineEdit::keyPressEvent(event);
-}
-
-void QtAddressBar::enterEvent(QEvent *event)
-{
-    QLineEdit::enterEvent(event);
-}
-
-void QtAddressBar::leaveEvent(QEvent *event)
-{
-    if(nullptr != m_lastCheckBtn) {
-        m_addressGroup->setExclusive(false);
-        m_lastCheckBtn->setChecked(false);
-        m_addressGroup->setExclusive(true);
-
-        m_lastCheckBtn = nullptr;
-    }
-    QLineEdit::leaveEvent(event);
 }
 
 void QtAddressBar::onGroupBtnClicked(QAbstractButton *button)
@@ -256,6 +257,7 @@ void QtAddressBar::clearAddressItem()
     foreach (QAbstractButton *button, m_addressGroup->buttons()) {
        m_addressGroup->removeButton(button);
     }
+    m_lastCheckBtn = nullptr;
 
     QLayoutItem *child;
     while ((child = m_pMainLayout->takeAt(0)) != 0) {

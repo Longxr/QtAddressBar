@@ -17,15 +17,18 @@ SOURCES += main.cpp\
         MainWindow.cpp \
     FileSystemModel.cpp \
     QtAddressBar.cpp \
-    AddressItem.cpp
+    AddressItem.cpp \
+    MenuWidget.cpp
 
 HEADERS  += MainWindow.h \
     NoFocusRectStyle.h \
     FileSystemModel.h \
     QtAddressBar.h \
-    AddressItem.h
+    AddressItem.h \
+    MenuWidget.h
 
-FORMS    += MainWindow.ui
+FORMS    += MainWindow.ui \
+    MenuWidget.ui
 
 RESOURCES += \
     res.qrc

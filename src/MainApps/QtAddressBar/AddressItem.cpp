@@ -6,14 +6,18 @@
 #include <QDebug>
 #include <QDir>
 #include <QFileInfoList>
+#include <QWidgetAction>
 
 #define ARROW_WIDTH     17
 #define SPACE_WIDTH     8
 #define ITEM_HEIGHT     20
 
-AddressItem::AddressItem(const QString &text, const QString &path, bool bArrow, QWidget *parent) :
+AddressItem::AddressItem(const QString &text, const QString &path, bool isRoot, QWidget *parent) :
     QPushButton(parent),
-    m_bHaveArrow(bArrow),
+    m_pressed(false),
+    m_pressedText(false),
+    m_moveflag(false),
+    m_bRoot(isRoot),
     m_path(path),
     m_text(text)
 {
@@ -138,33 +142,6 @@ void AddressItem::leaveEvent(QEvent *)
     update();
 }
 
-bool AddressItem::eventFilter(QObject *watched, QEvent *event)
-{
-//    if(watched == m_clickmenu)
-//    {
-//        QEvent::Type eType = event->type();
-//        if(eType == QEvent::FocusOut)
-//        {
-//            m_clickmenu->hide();
-//            return false;
-//        }
-//    }
-
-    return QWidget::eventFilter(watched, event);
-}
-
-//void AddressItem::mouseMoveEvent(QMouseEvent *event)
-//{
-//    if(rect().contains(event->pos())) {
-//        m_moveflag = true;
-//    }
-//    else {
-//        m_moveflag = false;
-//    }
-
-//    update();
-//}
-
 void AddressItem::menuAboutToHide()
 {
     m_moveflag = false;
@@ -207,20 +184,14 @@ void AddressItem::InitUI()
 
     m_clickmenu = new QMenu(this);
     m_clickmenu->setWindowFlags(Qt::ToolTip);
-    m_clickmenu->installEventFilter(this);
 //    setAttribute(Qt::WA_TransparentForMouseEvents);
     connect(m_clickmenu, SIGNAL(aboutToHide()), this, SLOT(menuAboutToHide()));
 
-    m_clickmenu->clear();
-    QDir dir(m_path);
-    dir.setFilter(/*QDir::Files | QDir::Hidden | */QDir::NoSymLinks | QDir::Dirs | QDir::NoDotAndDotDot);
-    dir.setSorting(QDir::Name);
-    QStringList list = dir.entryList();
-    foreach(QString str, list) {
-        QAction* strAc = new QAction(QIcon(":/res/dir.png"), str, m_clickmenu);
-        connect(strAc, &QAction::triggered, this, &AddressItem::onClickMenuItem);
-        m_clickmenu->addAction(strAc);
-    }
+    QWidgetAction* action = new QWidgetAction(this);
+    m_pMenuWidget = new MenuWidget(m_bRoot, this);
+    m_pMenuWidget->updateDirModel(m_path);
+    action->setDefaultWidget(m_pMenuWidget);
+    m_clickmenu->addAction(action);
 
     m_clickmenu->setStyleSheet("QMenu {background-color:rgb(242,242,242); border: 1px solid rgb(100,100,100);}\
                      QMenu::item {font-size: 9pt; color: rgb(0,0,0); padding:4px 20px 4px 20px;margin:1px 2px;}\
@@ -228,5 +199,7 @@ void AddressItem::InitUI()
 
     setMouseTracking(true);
     setCheckable(true);
+
     connect(this, &AddressItem::toggled, this, &AddressItem::onCheckChanged);
+    connect(m_pMenuWidget, &MenuWidget::SClickPath, this, &AddressItem::SClickPath);
 }

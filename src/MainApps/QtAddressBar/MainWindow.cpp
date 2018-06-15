@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QProcess>
+#include <QMouseEvent>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -105,6 +106,7 @@ void MainWindow::InitUI()
     ui->tableView->verticalHeader()->setDefaultSectionSize(25);  // set row height.
     ui->tableView->horizontalHeader()->setHighlightSections(false);
     ui->tableView->setFrameShape(QFrame::NoFrame);
+    ui->tableView->installEventFilter(this);
 
     m_pCompleterModel = new QDirModel(this);
     m_pCompleterModel->setReadOnly(false);
@@ -125,4 +127,30 @@ void MainWindow::on_pushButton_clicked()
 {
     m_currentPath = QString("Z:/QtWorkspace/trunk/PackageMaker_SetupSkin/SetupScripts/classroomcloud");
     ui->addressbar->UpdateCurrentPath(m_currentPath);
+}
+
+bool MainWindow::event(QEvent *event)
+{
+//    qDebug() << event->type();
+
+    if(event->type() == QEvent::NonClientAreaMouseButtonPress || event->type() == QEvent::MouseButtonPress ||
+       event->type() == QEvent::WindowDeactivate) {
+        ui->addressbar->closeMenu();
+    }
+
+    return QMainWindow::event(event);
+}
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if(watched == ui->tableView)
+    {
+//        qDebug() << event->type();
+        if(event->type() == QEvent::FocusIn)
+        {
+            ui->addressbar->closeMenu();
+        }
+    }
+
+    return QMainWindow::eventFilter(watched, event);
 }
