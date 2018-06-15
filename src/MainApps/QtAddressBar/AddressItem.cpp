@@ -138,6 +138,21 @@ void AddressItem::leaveEvent(QEvent *)
     update();
 }
 
+bool AddressItem::eventFilter(QObject *watched, QEvent *event)
+{
+//    if(watched == m_clickmenu)
+//    {
+//        QEvent::Type eType = event->type();
+//        if(eType == QEvent::FocusOut)
+//        {
+//            m_clickmenu->hide();
+//            return false;
+//        }
+//    }
+
+    return QWidget::eventFilter(watched, event);
+}
+
 //void AddressItem::mouseMoveEvent(QMouseEvent *event)
 //{
 //    if(rect().contains(event->pos())) {
@@ -171,14 +186,13 @@ void AddressItem::onCheckChanged(bool checked)
 
     if (checked)
     {
-//            emit  ((PathLineWidget*)parentWidget())->clickeddirsubpath(m_path);
         if(!m_clickmenu->isVisible()) {
             QPoint GlobalPoint(this->mapToGlobal(QPoint(0,0)));
             GlobalPoint.setX(GlobalPoint.x() + ARROW_WIDTH+m_textWidth - 30);
             GlobalPoint.setY(GlobalPoint.y() + ITEM_HEIGHT);
             m_clickmenu->move(GlobalPoint);
             //menu->move(cursor().pos());
-            m_clickmenu->exec();
+            m_clickmenu->show();
         }
     }
     else{
@@ -193,6 +207,8 @@ void AddressItem::InitUI()
 
     m_clickmenu = new QMenu(this);
     m_clickmenu->setWindowFlags(Qt::ToolTip);
+    m_clickmenu->installEventFilter(this);
+//    setAttribute(Qt::WA_TransparentForMouseEvents);
     connect(m_clickmenu, SIGNAL(aboutToHide()), this, SLOT(menuAboutToHide()));
 
     m_clickmenu->clear();

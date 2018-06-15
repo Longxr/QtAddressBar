@@ -24,6 +24,8 @@ protected:
     void enterEvent(QEvent *);
     void leaveEvent(QEvent *);
 
+    bool eventFilter(QObject *, QEvent *);
+
 private slots:
     void menuAboutToHide();
     void onClickMenuItem();

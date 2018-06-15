@@ -200,6 +200,8 @@ void QtAddressBar::resizeEvent(QResizeEvent *event)
         }
     }
 
+    clearFocus();
+
     QLineEdit::resizeEvent(event);
 }
 
@@ -215,6 +217,23 @@ void QtAddressBar::keyPressEvent(QKeyEvent *event)
     }
 
     QLineEdit::keyPressEvent(event);
+}
+
+void QtAddressBar::enterEvent(QEvent *event)
+{
+    QLineEdit::enterEvent(event);
+}
+
+void QtAddressBar::leaveEvent(QEvent *event)
+{
+    if(nullptr != m_lastCheckBtn) {
+        m_addressGroup->setExclusive(false);
+        m_lastCheckBtn->setChecked(false);
+        m_addressGroup->setExclusive(true);
+
+        m_lastCheckBtn = nullptr;
+    }
+    QLineEdit::leaveEvent(event);
 }
 
 void QtAddressBar::onGroupBtnClicked(QAbstractButton *button)
